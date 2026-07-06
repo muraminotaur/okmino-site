@@ -5,7 +5,7 @@ const COLOR_G = 210;
 const COLOR_B = 210;
 const STARTING_ALPHA = 255;
 const BACKGROUND_COLOR = 255;
-const PROB_OF_NEIGHBOR = 0.5;
+const PROB_OF_NEIGHBOR = 0.5; // probability of surrounding cells being chosen when added to an array.
 const AMT_FADE_PER_FRAME = 5;
 const STROKE_WEIGHT = 0.5;
 
@@ -18,13 +18,16 @@ let currentCol = -1;
 let allNeighbors = []; //array to store all neighbors
 
 function setup(){
+  // creating a "canvas" for the p5.js draw() function to display on
   let myCanvas = createCanvas(windowWidth, windowHeight);
-  myCanvas.parent('p5container');
+  // this defines where the p5 canvas "docks" itself to. the HTML code will have to have a 'p5container' or whatever this is named.
+  myCanvas.parent('p5container'); 
 
-  colorWithAlpha = color(COLOR_R, COLOR_G, COLOR_B, STARTING_ALPHA);
-  noFill();
+  colorWithAlpha = color(COLOR_R, COLOR_G, COLOR_B, STARTING_ALPHA); // initialize the color variable
+  noFill(); // no fill for the canvas background
   stroke(colorWithAlpha);
   strokeWeight(STROKE_WEIGHT);
+  // divide the window dimensions by the size of each cell in pixels, then round up. 
   numRows = Math.ceil(windowHeight / CELL_SIZE);
   numCols = Math.ceil(windowWidth / CELL_SIZE);
 }
@@ -46,7 +49,7 @@ function draw(){
     let x = currentCol * CELL_SIZE;
     let y = currentRow * CELL_SIZE;
 
-    
+    // run getRandomNeighbors from the row and column specified, then push these to the allNeighbors[] array.
     allNeighbors.push(...getRandomNeighbors(row, col));
   }
 
@@ -54,8 +57,9 @@ function draw(){
   let y = row * CELL_SIZE;
 
   stroke(colorWithAlpha);
-  rect(x, y, CELL_SIZE, CELL_SIZE);
+  rect(x, y, CELL_SIZE, CELL_SIZE); //draw a rectangle at the (x,y) coordinates of the cell hovered over with the size of CELL_SIZE.
 
+  // for every neighboring cell surrounding the current one (determined by the random function), draw a cell and have it fade every frame.
   for (let neighbor of allNeighbors) {
     let neighborX = neighbor.col * CELL_SIZE;
     let neighborY = neighbor.row * CELL_SIZE;
@@ -66,6 +70,7 @@ function draw(){
     rect(neighborX, neighborY, CELL_SIZE, CELL_SIZE);
   }
 
+  // as neighboring cells reach 0 opacity (completely invisible), remove them from the array.
   allNeighbors = allNeighbors.filter((neighbor) => neighbor.opacity > 0);
 }
 
@@ -112,6 +117,7 @@ function getRandomNeighbors(row, col) {
   return neighbors;
 }
 
+// in the event the window is resized, re-calculate the rows and columns.
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   numRows = Math.ceil(windowHeight / CELL_SIZE);
